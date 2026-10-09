@@ -28,6 +28,43 @@ static double wall_time(void) {
     return (double)ts.tv_sec + (double)ts.tv_nsec / 1e9;
 }
 
+static int load_template(const char *dir, uint8_t *T) {
+    char path[1024];
+    FILE *f = NULL;
+
+    if (dir) {
+        snprintf(path, sizeof(path), "%s/template.bin", dir);
+        f = fopen(path, "rb");
+    }
+
+    if (!f) {
+        snprintf(path, sizeof(path), "./template.bin");
+        f = fopen(path, "rb");
+    }
+
+    if (!f) {
+        snprintf(path, sizeof(path),
+                 "/kaggle/working/ssd_project/data/template.bin");
+        f = fopen(path, "rb");
+    }
+
+    if (!f) {
+        fprintf(stderr,
+                "Cannot read template.bin. Expected it in %s/template.bin, ./template.bin, or the Kaggle default path.\n",
+                dir ? dir : ".");
+        return 0;
+    }
+
+    if (fread(T, 1, TP, f) != TP) {
+        fprintf(stderr, "Template file %s is incomplete.\n", path);
+        fclose(f);
+        return 0;
+    }
+
+    fclose(f);
+    return 1;
+}
+
 static Result match_ssd(const uint8_t *image, const uint8_t *T) {
     Result best = {-1, -1, INT64_MAX};
 
@@ -71,17 +108,9 @@ int main(int argc, char **argv) {
     }
 
     uint8_t T[TP];
-
-    FILE *tf = fopen(
-        "/kaggle/working/ssd_project/data/template.bin", "rb"
-    );
-
-    if (!tf || fread(T, 1, TP, tf) != TP) {
-        fprintf(stderr, "Cannot read template.bin\n");
-        if (tf) fclose(tf);
+    if (!load_template(dir, T)) {
         return 1;
     }
-    fclose(tf);
 
     Result *results = calloc((size_t)N, sizeof(Result));
     if (!results) {
