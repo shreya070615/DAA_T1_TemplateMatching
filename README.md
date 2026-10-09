@@ -1,137 +1,149 @@
-# DAA T1 — Template Matching using Sequential C and OpenMP
+# 🔍 DAA T1 — Template Matching Using Sequential C and OpenMP
 
-A Design and Analysis of Algorithms (DAA) project implementing and comparing sequential and parallel approaches to image template matching using C and OpenMP.
+A **Design and Analysis of Algorithms (DAA)** project that implements and compares sequential and parallel image template matching using **C and OpenMP**.
 
-## 📌 Project Overview
+## 📌 About the Project
 
-Template matching is an image-processing technique used to locate a smaller template image within a larger target image.
+Template matching is an image-processing technique used to find a small image (called a *template*) inside a larger image.
 
-This project explores the **Sum of Squared Differences (SSD)** method for measuring the difference between a template and candidate regions of an image. The SSD score helps identify how closely a region matches the template.
+This project uses **Sum of Squared Differences (SSD)** to measure how closely a region of an image matches the template. A lower SSD score indicates a closer match.
 
-The project compares two implementations:
+We implement and compare two approaches:
 
-* **Sequential implementation:** Processes the computation sequentially.
-* **OpenMP implementation:** Uses OpenMP to parallelize suitable parts of the computation.
+* 🐢 **Sequential C:** Processes images one at a time.
+* ⚡ **OpenMP:** Processes multiple images in parallel using multiple threads.
 
-The goal is to examine correctness and understand the performance implications of parallel processing.
+🎯 **Goal:** Understand parallel programming, verify result consistency, and compare execution performance.
 
 ## ✨ Features
 
-* Image dataset preparation and preprocessing.
-* Sequential implementation in C.
-* Parallel implementation using OpenMP.
-* CSV output generation for computed results.
-* Result comparison to check consistency between implementations.
-* Execution in a Kaggle notebook environment.
+* 🖼️ Image dataset preparation and preprocessing.
+* 💻 Sequential SSD implementation in C.
+* ⚡ Parallel processing using OpenMP.
+* 📄 CSV files containing matching coordinates and SSD scores.
+* ✅ Result comparison using Python and Pandas.
+* ☁️ Experimentation using Kaggle Notebooks.
 
 ## 🛠️ Technologies Used
 
-* **C** — Algorithm implementation.
-* **OpenMP** — Shared-memory parallel programming.
-* **GCC** — C compilation with OpenMP support.
-* **Python and Pandas** — Dataset handling and result validation.
-* **Kaggle Notebooks** — Development and experimentation.
+| Technology       | Purpose                            |
+| ---------------- | ---------------------------------- |
+| C                | Implementing the SSD algorithm     |
+| OpenMP           | Parallel processing                |
+| GCC              | Compiling C programs               |
+| Python           | Dataset preparation and validation |
+| Pandas           | Comparing CSV results              |
+| Kaggle Notebooks | Running experiments                |
 
 ## 📂 Project Structure
 
 ```text
 DAA_T1_TemplateMatching/
-├── DAA_SSD_OpenMP_Project.ipynb
-├── ssd_seq.c
-├── ssd_omp.c
-├── train_split.csv
-├── test_split.csv
-├── sequential_100.csv
-├── openmp_100.csv
-└── README.md
+├── 📓 daa-ssd-openmp-project.ipynb
+├── 💻 ssd_seq.c
+├── ⚡ ssd_omp.c
+├── 📄 train_split.csv
+├── 📄 test_split.csv
+├── 📊 sequential_100.csv
+├── 📊 openmp_100.csv
+└── 📘 README.md
 ```
 
-*Note: The CSV files are generated outputs or dataset split files. Their availability depends on which files have been uploaded to the repository.*
+*Note: The notebook filename and file list should match the actual files in this repository. CSV files may contain generated results or dataset information.*
 
-## ⚙️ Compilation
+## ⚙️ How to Compile
 
-Make sure GCC is installed and supports OpenMP.
+You need GCC installed. OpenMP support is required for the parallel implementation.
 
-### 1. Compile the sequential implementation
+### 1️⃣ Compile the sequential program
 
 ```bash
 gcc -O3 -std=c11 ssd_seq.c -o ssd_seq
 ```
 
-### 2. Compile the OpenMP implementation
+### 2️⃣ Compile the OpenMP program
 
 ```bash
 gcc -O3 -std=c11 -fopenmp ssd_omp.c -o ssd_omp
 ```
 
-The `-O3` flag enables compiler optimizations, while `-fopenmp` enables OpenMP support.
+✅ If no errors appear, the programs have compiled successfully.
 
-## ▶️ Running the Project
+**What do the flags mean?**
 
-The OpenMP executable accepts three command-line arguments:
+* `-O3` 🚀 Enables compiler optimizations.
+* `-std=c11` 📘 Uses the C11 language standard.
+* `-fopenmp` ⚡ Enables OpenMP support.
 
-```text
-./ssd_omp DATA_DIR N OUTPUT.csv
-```
+## ▶️ How to Run
 
-Where:
+Both programs accept three arguments:
 
-* `DATA_DIR` is the path to the input dataset.
-* `N` is the input parameter expected by the program.
-* `OUTPUT.csv` is the path where results will be saved.
+`DATA_DIR` — Directory containing the binary input images.
 
-Example:
+`N` — Number of images to process.
+
+`OUTPUT.csv` — File where the results will be saved.
+
+### 🐢 Run the sequential version
 
 ```bash
-./ssd_omp ./data 100 ./openmp_100.csv
+./ssd_seq DATA_DIR N sequential.csv
 ```
 
-Adjust the dataset path and `N` value to match your actual program configuration.
+### ⚡ Run the OpenMP version
 
-Refer to the notebook for the complete dataset preparation, execution, and validation workflow.
+```bash
+OMP_NUM_THREADS=4 ./ssd_omp DATA_DIR N openmp.csv
+```
 
-## 🧪 Correctness Validation
+Here, `OMP_NUM_THREADS=4` requests four OpenMP threads.
 
-The project compares the sequential and OpenMP result files using Python and Pandas.
+📌 **Important:** The input directory must contain the binary images expected by the program. The template binary must also exist at the path configured in the C source code. Update any Kaggle-specific paths before running the project elsewhere.
 
-The validation checks the following columns when present:
+💡 Refer to the notebook for the complete dataset preparation and execution workflow.
 
-* `image_id`
-* `x`
-* `y`
-* `ssd`
+## 🧪 Result Validation
 
-Matching results indicate that the implementations agree on the checked outputs for the tested inputs. Correctness should be checked separately from performance.
+We use Python and Pandas to compare the output CSV files from both implementations.
 
-## 📊 Dataset
+The comparison checks:
 
-The Kaggle workflow prepares a dataset containing 5,000 images:
+* 🆔 `image_id` — Input image identifier.
+* 📍 `x`, `y` — Best-match coordinates.
+* 📉 `ssd` — SSD score for the best match.
 
-| Split     |    Images | Percentage |
-| --------- | --------: | ---------: |
-| Training  |     4,000 |        80% |
-| Testing   |     1,000 |        20% |
-| **Total** | **5,000** |   **100%** |
+✅ If all these values match for every tested image, the sequential and OpenMP implementations produce identical recorded results for that experiment.
 
-The notebook contains the dataset preparation workflow. The original image dataset may need to be downloaded separately rather than stored in this repository.
+*Correctness and performance are evaluated separately.*
 
-## 🎯 Learning Outcomes
+## 🖼️ Dataset
 
-* Understanding template matching and the SSD method.
-* Implementing algorithms in C.
-* Exploring parallel programming with OpenMP.
-* Comparing sequential and parallel computation.
-* Validating computational results using Python.
+The notebook prepares image data for the template-matching experiment and generates binary inputs for the C programs.
+
+The project uses a fixed-size image and template configuration for its SSD benchmark.
+
+📌 The original image dataset and generated binary files may need to be downloaded or recreated when running the project in a new environment.
+
+## 📚 Learning Outcomes
+
+* 🧠 Understanding SSD-based template matching.
+* 💻 Implementing algorithms using C.
+* ⚡ Learning parallel programming with OpenMP.
+* 🔄 Comparing sequential and parallel execution.
+* ✅ Validating results using Python.
+* 📊 Measuring execution time and speedup.
 
 ## 🚀 Future Improvements
 
-* Benchmark execution time across different input sizes.
-* Evaluate performance with different OpenMP thread counts.
-* Calculate speedup and parallel efficiency.
-* Extend validation to the complete test dataset.
+* 📈 Benchmark larger datasets.
+* 🧵 Experiment with different OpenMP thread counts.
+* ⚡ Calculate speedup and parallel efficiency.
+* 🧪 Validate results on the complete benchmark dataset.
+* 🔧 Make file paths configurable for easier execution on different systems.
 
 ---
 
-**Project Type:** Academic — Design and Analysis of Algorithms (DAA)
-**Languages:** C, Python
-**Parallel Programming:** OpenMP
+🎓 **Project Type:** Academic — Design and Analysis of Algorithms (DAA)
+💻 **Languages:** C, Python
+⚡ **Parallel Programming:** OpenMP
